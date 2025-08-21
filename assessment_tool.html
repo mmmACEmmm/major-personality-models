@@ -2,104 +2,266 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Advanced Personality Assessment</title>
-  <!-- Chart.js for radar plots -->
+
+  <!-- Fonts & Charts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.45;
-      margin: 0 auto;
-      padding: 20px;
-      max-width: 900px;
+    :root{
+      --bg: #0b0f14;
+      --panel:#0f1620;
+      --surface:#141c27;
+      --text:#e8eef6;
+      --muted:#a9b4c1;
+      --brand:#6aa6ff;
+      --brand-2:#4caf50;
+      --accent:#ffd166;
+      --danger:#ff6b6b;
+      --ok:#67e8f9;
+      --border:#1e2a39;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
     }
-    h1 {
-      text-align: center;
-      margin-top: 0;
+    [data-theme="light"]{
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --surface:#ffffff;
+      --text:#0b1220;
+      --muted:#4b5563;
+      --brand:#2563eb;
+      --brand-2:#16a34a;
+      --accent:#b45309;
+      --danger:#dc2626;
+      --ok:#0891b2;
+      --border:#e5e7eb;
+      --shadow: 0 8px 24px rgba(2,6,23,.08);
     }
-    #instructions {
-      margin-bottom: 20px;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(106,166,255,.18), transparent 50%),
+                  radial-gradient(900px 500px at 110% 10%, rgba(22,163,74,.14), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.5;
     }
-    #question-container {
-      margin-bottom: 20px;
-      padding: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background: #f9f9f9;
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:24px;
     }
-    .question-text {
-      font-size: 1.1em;
-      margin-bottom: 10px;
+    header{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter:saturate(140%) blur(6px);
+      background:linear-gradient(to bottom, rgba(0,0,0,.25), transparent), var(--bg);
+      border-bottom:1px solid var(--border);
     }
-    .options {
-      margin-bottom: 15px;
+    .head-row{
+      display:flex; align-items:center; gap:12px; justify-content:space-between;
+      padding:14px 24px;
+      max-width:1100px; margin:0 auto;
     }
-    .options label {
-      margin-right: 15px;
+    .title{
+      display:flex; align-items:center; gap:12px;
     }
-    #progress-bar {
-      position: relative;
-      height: 10px;
-      background: #e0e0e0;
-      border-radius: 5px;
-      margin-bottom: 20px;
+    .title .logo{
+      width:36px; height:36px; border-radius:10px;
+      background: conic-gradient(from 210deg, var(--brand), var(--ok), var(--brand));
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,.1), var(--shadow);
     }
-    #progress-inner {
-      height: 100%;
-      width: 0;
-      background: #4caf50;
-      border-radius: 5px;
-      transition: width 0.3s ease;
+    h1{font-size: clamp(20px, 3.2vw, 28px); margin:0; font-weight:700}
+    .muted{color:var(--muted)}
+    .pill{
+      font-size:12px; padding:6px 10px; border:1px solid var(--border); border-radius:999px; color:var(--muted);
     }
-    #navigation-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
+    .row{display:flex; gap:20px; align-items:stretch}
+    .col{flex:1}
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), transparent 40%), var(--panel);
+      border:1px solid var(--border);
+      border-radius:14px; padding:18px; box-shadow:var(--shadow);
     }
-    #navigation-buttons button {
-      padding: 10px 20px;
-      font-size: 1em;
+    .lead{font-size:15px}
+    .toolbar{display:flex; gap:10px; flex-wrap:wrap}
+    button,.btn{
+      appearance:none; border:1px solid var(--border); background:var(--surface);
+      color:var(--text); padding:10px 14px; border-radius:10px; font-weight:600; cursor:pointer;
+      transition:.15s transform ease, .2s background ease, .2s border-color ease, .2s color ease;
     }
-    #result-container {
-      display: none;
-      margin-top: 30px;
+    button:hover{transform:translateY(-1px)}
+    button:disabled{opacity:.55; cursor:not-allowed; transform:none}
+    .btn-primary{background:linear-gradient(180deg, rgba(255,255,255,.08), transparent 50%), var(--brand); border-color:transparent; color:white}
+    .btn-success{background:linear-gradient(180deg, rgba(255,255,255,.08), transparent 50%), var(--brand-2); border-color:transparent; color:white}
+    .btn-danger{background:linear-gradient(180deg, rgba(255,255,255,.08), transparent 50%), var(--danger); border-color:transparent; color:white}
+    .btn-ghost{background:transparent}
+    .btn-outline{background:transparent; border-color:var(--brand); color:var(--brand)}
+    .right{margin-left:auto}
+    .grid{display:grid; gap:16px}
+    .grid-2{grid-template-columns:1.2fr .8fr}
+    @media(max-width:1000px){.grid-2{grid-template-columns:1fr}}
+    .progress{
+      height:10px; background:linear-gradient(180deg, rgba(255,255,255,.04), transparent 60%), var(--surface);
+      border:1px solid var(--border); border-radius:999px; overflow:hidden; width:100%;
     }
-    #results-text {
-      margin-top: 20px;
+    .progress-inner{height:100%; width:0; background:linear-gradient(90deg, var(--brand), var(--ok)); transition:width .3s ease}
+    .progress-row{display:flex; align-items:center; gap:12px}
+    .stat{font-size:12px; color:var(--muted)}
+    .badge{font-size:12px; background:rgba(255,255,255,.06); border:1px solid var(--border); padding:4px 8px; border-radius:8px}
+    .question{
+      font-size:18px; font-weight:600; margin:8px 0 14px;
     }
-    @media (max-width: 600px) {
-      .options label {
-        display: block;
-        margin-bottom: 5px;
-      }
+    .likert{
+      display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-top:8px;
     }
+    .choice{
+      position:relative; display:flex; align-items:center; justify-content:center;
+      padding:12px 8px; border:1px solid var(--border); background:var(--surface);
+      border-radius:10px; font-weight:700; cursor:pointer; user-select:none;
+    }
+    .choice[data-active="true"]{
+      outline:2px solid color-mix(in oklab, var(--brand) 70%, transparent);
+      border-color:transparent; background:linear-gradient(180deg, rgba(255,255,255,.08), transparent 45%), color-mix(in oklab, var(--brand) 14%, var(--surface));
+    }
+    .likert-anchors{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-top:6px}
+    .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+    .key{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12px; padding:2px 6px; border:1px solid var(--border); border-radius:6px; color:var(--muted)}
+    .krow{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+    .note{font-size:12px; color:var(--muted)}
+    .divider{height:1px; background:linear-gradient(90deg, transparent, var(--border), transparent); margin:14px 0}
+    .result{
+      display:none; gap:16px;
+    }
+    .table{width:100%; border-collapse:collapse; font-size:14px}
+    .table th,.table td{padding:8px 10px; border-bottom:1px solid var(--border)}
+    .chip{display:inline-block; font-size:12px; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid var(--border)}
+    .good{color:#10b981} .warn{color:#f59e0b} .bad{color:#ef4444}
+    .toast{
+      position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+      background:var(--panel); border:1px solid var(--border); padding:10px 14px; border-radius:10px; box-shadow:var(--shadow);
+      display:none; gap:10px; align-items:center; z-index:60;
+    }
+    .flag{color:var(--accent); font-weight:700}
+    .small{font-size:12px}
+    .footer{margin-top:20px; font-size:12px; color:var(--muted); text-align:center}
+    .hide{display:none !important}
   </style>
 </head>
-<body>
-  <h1>Advanced Personality Assessment</h1>
-  <div id="instructions">
-    <p>
-      Answer the following questions as honestly as possible. Each statement applies
-      to a particular context (work, relationships or leisure). Use the 1–7 scale
-      where 1 means you strongly disagree and 7 means you strongly agree. There is
-      no time limit. Your responses will inform your scores across several
-      personality dimensions.
-    </p>
-  </div>
-  <div id="progress-bar"><div id="progress-inner"></div></div>
-  <div id="question-container"></div>
-  <div id="navigation-buttons">
-    <button id="prev" disabled>Previous</button>
-    <button id="next">Next</button>
-  </div>
-  <div id="result-container">
-    <h2>Your Results</h2>
-    <canvas id="radarChart" width="400" height="300"></canvas>
-    <div id="results-text"></div>
-  </div>
+<body data-theme="dark">
+  <header>
+    <div class="head-row">
+      <div class="title">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Advanced Personality Assessment</h1>
+          <div class="muted small">Context-aware, 8-dimension profile • 1–7 Likert scale</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button id="themeToggle" class="btn-ghost" aria-label="Toggle theme">Toggle Theme</button>
+        <span class="pill">Autosaves Locally</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid grid-2">
+      <section class="panel col">
+        <div class="progress-row">
+          <div class="progress" aria-label="Progress"><div id="progressInner" class="progress-inner"></div></div>
+          <span id="pct" class="badge">0%</span>
+          <span id="counter" class="stat">Q 0 / 120</span>
+          <span id="eta" class="stat right">ETA: —</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div id="instructions" class="lead muted">
+          Answer honestly. Context appears in each statement (Work / Relationships / Leisure). Scale 1–7, where 1 = strongly disagree and 7 = strongly agree. Keyboard: [1–7]=score, [Enter]=Next, [Backspace]=Prev, [S]=Skip, [F]=Flag.
+        </div>
+
+        <div id="qPanel" class="panel" style="margin-top:12px; background:transparent; border-color:transparent; box-shadow:none; padding:0;">
+          <div id="questionContainer"></div>
+          <div class="controls">
+            <button id="prevBtn" class="btn">← Previous</button>
+            <button id="skipBtn" class="btn-ghost">Skip</button>
+            <button id="flagBtn" class="btn-outline">Flag</button>
+            <div class="right"></div>
+            <button id="nextBtn" class="btn-primary">Next →</button>
+          </div>
+          <div class="divider"></div>
+          <div class="krow muted small">
+            <span class="key">1–7</span> choose score
+            <span class="key">Enter</span> next
+            <span class="key">Backspace</span> previous
+            <span class="key">S</span> skip
+            <span class="key">F</span> flag
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel col" id="sidePanel">
+        <div class="muted small">Session</div>
+        <div style="height:8px"></div>
+        <div class="grid" style="grid-template-columns:1fr 1fr; gap:10px">
+          <button id="resetBtn" class="btn-danger">Reset</button>
+          <button id="resumeBtn" class="btn hide">Resume</button>
+        </div>
+        <div style="height:10px"></div>
+        <div class="muted small">Status</div>
+        <ul class="small muted" id="statusList" style="margin:6px 0 0 18px">
+          <li><span id="flagCount">0</span> flagged for review</li>
+          <li><span id="skipCount">0</span> auto-skipped (extreme consistency)</li>
+          <li><span id="answeredCount">0</span> answered</li>
+        </ul>
+        <div class="divider"></div>
+        <div class="muted small">Privacy</div>
+        <div class="small muted">All data stays in your browser (localStorage). Export options are below when you finish.</div>
+      </aside>
+    </div>
+
+    <section id="resultSection" class="result grid" style="margin-top:18px; grid-template-columns:1.2fr .8fr">
+      <div class="panel">
+        <h2 style="margin:0 0 6px">Your Results</h2>
+        <div class="muted small">Dimensional profile (0–100 scale). Context effects shown below.</div>
+        <canvas id="radarChart" height="340" style="margin-top:10px"></canvas>
+        <div class="divider"></div>
+        <h3 style="margin:0 0 6px">Summary Table</h3>
+        <table class="table" id="resultTable"></table>
+      </div>
+      <div class="panel">
+        <h3 style="margin-top:0">Top & Bottom Dimensions</h3>
+        <canvas id="barChart" height="260"></canvas>
+        <div class="divider"></div>
+        <h3 style="margin:0 0 6px">Context Patterns</h3>
+        <div id="contextBlocks" class="grid"></div>
+        <div class="divider"></div>
+        <h3 style="margin:0 0 6px">Actions</h3>
+        <div class="toolbar" style="gap:8px">
+          <button id="downloadJson" class="btn">Export JSON</button>
+          <button id="downloadCsv" class="btn">Export CSV</button>
+          <button id="downloadPng" class="btn">Save Chart PNG</button>
+          <button id="printBtn" class="btn">Print</button>
+        </div>
+        <div class="divider"></div>
+        <h3 style="margin:0 0 6px">Flagged Items</h3>
+        <div id="flagList" class="small muted">None</div>
+        <div class="divider"></div>
+        <h3 style="margin:0 0 6px">Personalized Tips</h3>
+        <div id="tips" class="small"></div>
+      </div>
+    </section>
+
+    <div class="footer">© <span id="year"></span> Advanced Personality Assessment • v1.4 • Keyboard first • Accessible</div>
+  </main>
+
+  <div id="toast" class="toast"><span id="toastMsg">Saved</span><button class="btn-ghost small" id="toastClose">Close</button></div>
+
   <script>
-    // Define the eight dimensions used in this assessment
+    /*************** MODEL ****************/
     const dimensions = [
       'Social Connectivity',
       'Cognitive Exploration',
@@ -110,11 +272,8 @@
       'Adaptability/Flexibility',
       'Creativity/Ingenuity'
     ];
+    const contexts = ['work','relationships','leisure'];
 
-    // Define three contexts for situational variation
-    const contexts = ['work', 'relationships', 'leisure'];
-
-    // Base statements for each dimension. Five statements per dimension.
     const baseStatements = {
       'Social Connectivity': [
         'I enjoy initiating conversations with new people.',
@@ -174,225 +333,465 @@
       ]
     };
 
-    // Build the full list of questions: for each dimension, for each context, map the five base statements
+    const tipsByDim = {
+      'Social Connectivity': ['Schedule regular 1:1s to deepen ties.', 'Practice short icebreakers before group work.'],
+      'Cognitive Exploration': ['Block weekly time for deep reading.', 'Join a study circle or forum on new topics.'],
+      'Emotional Regulation': ['Use box breathing under time pressure.', 'Track triggers; design pre-emptive routines.'],
+      'Agreeableness/Empathy': ['Reflect back what you heard in meetings.', 'Use “steel-manning” for opposing views.'],
+      'Conscientiousness': ['Use 2-minute rule and weekly reviews.', 'Define clear “done” criteria before starting.'],
+      'Integrity/Honesty': ['Pre-commit to standards publicly.', 'Use checklists to avoid corner-cutting under stress.'],
+      'Adaptability/Flexibility': ['Run premortems on plans to consider pivots.', 'Practice “if-then” replan drills.'],
+      'Creativity/Ingenuity': ['Carry an idea log; review weekly.', 'Force alternative solutions with SCAMPER.']
+    };
+
+    // Build questions (5 per dimension * 3 contexts * 8 dims = 120)
     const questions = [];
-    dimensions.forEach(dim => {
-      contexts.forEach(ctx => {
-        baseStatements[dim].forEach(stmt => {
-          // Prepend the context to the statement for situational cues
-          let prefix;
-          switch (ctx) {
-            case 'work':
-              prefix = 'At work, ';
-              break;
-            case 'relationships':
-              prefix = 'In my relationships, ';
-              break;
-            case 'leisure':
-              prefix = 'During leisure time, ';
-              break;
-          }
-          questions.push({
-            text: prefix + stmt,
-            dimension: dim,
-            context: ctx
-          });
+    const ctxPrefix = {work:'At work, ',relationships:'In my relationships, ',leisure:'During leisure time, '};
+    dimensions.forEach(dim=>{
+      contexts.forEach(ctx=>{
+        baseStatements[dim].forEach(stmt=>{
+          questions.push({ text: ctxPrefix[ctx] + stmt, dimension: dim, context: ctx });
         });
       });
     });
 
-    // Shuffle questions to minimize order effects
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
+    // Shuffle once for session variety
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]} return a }
     shuffle(questions);
 
-    // State variables
-    let currentIndex = 0;
-    const responses = [];
-    const skipped = new Set();
-    const dimensionResponses = {};
-    dimensions.forEach(dim => {
-      dimensionResponses[dim] = [];
-    });
+    /*************** STATE ****************/
+    let current = 0;
+    let responses = Array(questions.length).fill(null); // values 1..7 or null
+    let flags = new Set(); // indices
+    let skipped = new Set(); // auto-skipped indices (unanswered)
+    let startedAt = Date.now();
+    let timestamps = []; // ms spent per answered
+    const STORAGE_KEY = 'apa_v14_session';
 
-    // Render the current question
-    function renderQuestion() {
-      const container = document.getElementById('question-container');
-      container.innerHTML = '';
-      if (currentIndex >= questions.length) {
-        showResults();
-        return;
-      }
-      const q = questions[currentIndex];
-      const p = document.createElement('p');
-      p.className = 'question-text';
-      p.textContent = `Question ${currentIndex + 1} of ${questions.length}: ` + q.text;
-      container.appendChild(p);
-      const optionsDiv = document.createElement('div');
-      optionsDiv.className = 'options';
-      for (let i = 1; i <= 7; i++) {
-        const label = document.createElement('label');
-        label.innerHTML = `<input type="radio" name="response" value="${i}"> ${i}`;
-        optionsDiv.appendChild(label);
-      }
-      container.appendChild(optionsDiv);
-      // Update progress bar
-      const progressInner = document.getElementById('progress-inner');
-      const percent = (currentIndex / questions.length) * 100;
-      progressInner.style.width = percent + '%';
-      // Disable previous button if at first question
-      document.getElementById('prev').disabled = currentIndex === 0;
+    /*************** ELEMENTS ****************/
+    const progressInner = document.getElementById('progressInner');
+    const pct = document.getElementById('pct');
+    const counter = document.getElementById('counter');
+    const eta = document.getElementById('eta');
+    const questionContainer = document.getElementById('questionContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const flagBtn = document.getElementById('flagBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+    const flagCountEl = document.getElementById('flagCount');
+    const skipCountEl = document.getElementById('skipCount');
+    const answeredCountEl = document.getElementById('answeredCount');
+    const resultSection = document.getElementById('resultSection');
+    const resultTable = document.getElementById('resultTable');
+    const contextBlocks = document.getElementById('contextBlocks');
+    const flagList = document.getElementById('flagList');
+    const tipsEl = document.getElementById('tips');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    const toastClose = document.getElementById('toastClose');
+    const themeToggle = document.getElementById('themeToggle');
+
+    /*************** UTIL ****************/
+    function showToast(msg){
+      toastMsg.textContent = msg;
+      toast.style.display='flex';
+      setTimeout(()=> toast.style.display='none', 2000);
+    }
+    toastClose.onclick = ()=> toast.style.display='none';
+
+    function save(){
+      const payload = {
+        current, responses, flags:[...flags], skipped:[...skipped],
+        timestamps, startedAt, questions // persist order
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    }
+    function maybeLoad(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return null;
+      try{ return JSON.parse(raw) }catch{ return null }
+    }
+    function clearStorage(){
+      localStorage.removeItem(STORAGE_KEY);
     }
 
-    // Save response and handle dynamic skipping
-    function saveResponse() {
-      const selected = document.querySelector('input[name="response"]:checked');
-      if (!selected) return false;
-      const value = parseInt(selected.value, 10);
-      const q = questions[currentIndex];
-      responses[currentIndex] = value;
-      dimensionResponses[q.dimension].push({ value, context: q.context });
-      // Dynamic skipping logic: if two responses for a dimension are extreme (≤2 or ≥6), skip the remaining items for that dimension
-      const dimData = dimensionResponses[q.dimension];
-      if (dimData.length === 2) {
-        const avg = (dimData[0].value + dimData[1].value) / 2;
-        if (avg <= 2 || avg >= 6) {
-          // skip remaining items for this dimension
-          for (let i = currentIndex + 1; i < questions.length; i++) {
-            if (questions[i].dimension === q.dimension) {
-              skipped.add(i);
-            }
-          }
-        }
+    function recomputeSkips(){
+      skipped = new Set();
+      // For each dimension, find first two answered indices in order, then if extreme, skip later unanswered of same dimension.
+      const answeredByDim = Object.fromEntries(dimensions.map(d=>[d, []]));
+      for(let i=0;i<questions.length;i++){
+        const v = responses[i];
+        if(v!=null) answeredByDim[questions[i].dimension].push({i,v});
       }
-      return true;
-    }
-
-    // Event handlers for navigation buttons
-    document.getElementById('next').addEventListener('click', () => {
-      if (!saveResponse()) {
-        alert('Please select a response before proceeding.');
-        return;
-      }
-      // Move to next non-skipped question
-      do {
-        currentIndex++;
-      } while (currentIndex < questions.length && skipped.has(currentIndex));
-      if (currentIndex < questions.length) {
-        renderQuestion();
-      } else {
-        showResults();
-      }
-    });
-    document.getElementById('prev').addEventListener('click', () => {
-      // Move to previous answered question
-      if (currentIndex === 0) return;
-      currentIndex--;
-      // skip indices which were skipped
-      while (currentIndex > 0 && skipped.has(currentIndex)) {
-        currentIndex--;
-      }
-      renderQuestion();
-    });
-
-    function showResults() {
-      document.getElementById('question-container').style.display = 'none';
-      document.getElementById('navigation-buttons').style.display = 'none';
-      document.getElementById('progress-bar').style.display = 'none';
-      document.getElementById('result-container').style.display = 'block';
-      // Compute average scores per dimension (0–100 scale)
-      const dimScores = {};
-      const contextScores = {};
-      dimensions.forEach(dim => {
-        const items = dimensionResponses[dim];
-        if (items.length === 0) {
-          dimScores[dim] = 0;
-          return;
-        }
-        const sum = items.reduce((acc, item) => acc + item.value, 0);
-        const avg = sum / items.length;
-        // map 1–7 to 0–100
-        dimScores[dim] = ((avg - 1) / 6) * 100;
-        // per context
-        items.forEach(item => {
-          if (!contextScores[item.context]) contextScores[item.context] = {};
-          if (!contextScores[item.context][dim]) contextScores[item.context][dim] = [];
-          contextScores[item.context][dim].push(item.value);
-        });
-      });
-      // Prepare data for radar chart
-      const labels = dimensions;
-      const dataValues = dimensions.map(dim => dimScores[dim]);
-      const ctx = document.getElementById('radarChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Your profile',
-              data: dataValues,
-              fill: true,
-              backgroundColor: 'rgba(54, 162, 235, 0.2)',
-              borderColor: 'rgba(54, 162, 235, 1)',
-              pointBackgroundColor: 'rgba(54, 162, 235, 1)'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            r: {
-              suggestedMin: 0,
-              suggestedMax: 100,
-              angleLines: { color: '#ccc' },
-              grid: { color: '#e0e0e0' },
-              pointLabels: { color: '#000', font: { size: 12 } },
-              ticks: {
-                callback: function(value) {
-                  return value;
-                }
+      dimensions.forEach(dim=>{
+        const arr = answeredByDim[dim];
+        if(arr.length>=2){
+          const avg = (arr[0].v + arr[1].v)/2;
+          if(avg<=2 || avg>=6){
+            for(let k=0;k<questions.length;k++){
+              if(k>arr[1].i && questions[k].dimension===dim && responses[k]==null){
+                skipped.add(k);
               }
             }
           }
         }
       });
-      // Compose result text with context-specific scores
-      let resultHTML = '<h3>Dimension Scores (0–100)</h3><ul>';
-      dimensions.forEach(dim => {
-        resultHTML += `<li><strong>${dim}:</strong> ${dimScores[dim].toFixed(1)}</li>`;
-      });
-      resultHTML += '</ul>';
-      // Context-specific interpretation
-      resultHTML += '<h3>Context-Specific Patterns</h3>';
-      for (const ctxName in contextScores) {
-        resultHTML += `<h4>${ctxName.charAt(0).toUpperCase() + ctxName.slice(1)}</h4><ul>`;
-        for (const dim in contextScores[ctxName]) {
-          const values = contextScores[ctxName][dim];
-          const avg = values.reduce((acc, v) => acc + v, 0) / values.length;
-          const score = ((avg - 1) / 6) * 100;
-          resultHTML += `<li>${dim}: ${score.toFixed(1)}</li>`;
-        }
-        resultHTML += '</ul>';
-      }
-      // Provide simple development recommendations based on highest and lowest scores
-      const sortedDims = Object.entries(dimScores).sort((a, b) => b[1] - a[1]);
-      const top = sortedDims[0];
-      const bottom = sortedDims[sortedDims.length - 1];
-      resultHTML += '<h3>Personalised Insights</h3>';
-      resultHTML += `<p>Your strongest dimension appears to be <strong>${top[0]}</strong>. Consider leveraging this strength to enhance your work and relationships.</p>`;
-      resultHTML += `<p>Your lowest dimension appears to be <strong>${bottom[0]}</strong>. Reflect on situations where this trait may have been challenged and explore strategies to develop it further.</p>`;
-      resultHTML += '<p>Personality is dynamic; retake this assessment at different life stages to track changes.</p>';
-      document.getElementById('results-text').innerHTML = resultHTML;
     }
 
-    // Initialise first question on page load
-    renderQuestion();
+    function updateHUD(){
+      const answered = responses.filter(v=>v!=null).length;
+      const p = Math.round((Math.min(current, questions.length)/questions.length)*100);
+      progressInner.style.width = p + '%';
+      pct.textContent = p + '%';
+      counter.textContent = `Q ${Math.min(current+1, questions.length)} / ${questions.length}`;
+      flagCountEl.textContent = flags.size;
+      skipCountEl.textContent = skipped.size;
+      answeredCountEl.textContent = answered;
+
+      // ETA
+      const avgMs = timestamps.length ? (timestamps.reduce((a,b)=>a+b,0)/timestamps.length) : 0;
+      const remaining = questions.length - answered;
+      const etaMin = avgMs ? Math.ceil((remaining*avgMs)/60000) : '—';
+      eta.textContent = `ETA: ${etaMin=== '—' ? '—' : etaMin+' min'}`;
+    }
+
+    function setTheme(mode){
+      document.body.setAttribute('data-theme', mode);
+      localStorage.setItem('apa_theme', mode);
+    }
+    themeToggle.onclick = ()=>{
+      const cur = document.body.getAttribute('data-theme');
+      setTheme(cur==='dark' ? 'light' : 'dark');
+    }
+    (function initTheme(){
+      const t = localStorage.getItem('apa_theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      setTheme(t);
+    })();
+
+    /*************** RENDER QUESTION ****************/
+    let questionStartTime = Date.now();
+
+    function renderQuestion(){
+      if(current>=questions.length){ finish(); return; }
+
+      const q = questions[current];
+      document.getElementById('instructions').classList.add('hide');
+
+      questionContainer.innerHTML = '';
+      const num = document.createElement('div');
+      num.className = 'muted small';
+      num.textContent = `Question ${current+1} of ${questions.length} • ${q.context.toUpperCase()} • ${q.dimension}`;
+      const qt = document.createElement('div');
+      qt.className = 'question';
+      qt.textContent = q.text;
+
+      const likert = document.createElement('div');
+      likert.className = 'likert';
+      const currentVal = responses[current];
+
+      for(let i=1;i<=7;i++){
+        const cell = document.createElement('div');
+        cell.className = 'choice';
+        cell.setAttribute('role','radio');
+        cell.setAttribute('aria-checked', currentVal===i ? 'true':'false');
+        cell.dataset.active = currentVal===i ? 'true':'false';
+        cell.textContent = i;
+        cell.onclick = ()=> select(i);
+        likert.appendChild(cell);
+      }
+
+      const anchors = document.createElement('div');
+      anchors.className = 'likert-anchors';
+      anchors.innerHTML = '<span>Strongly Disagree</span><span>Neutral</span><span>Strongly Agree</span>';
+
+      questionContainer.append(num, qt, likert, anchors);
+
+      prevBtn.disabled = current===0;
+      flagBtn.textContent = flags.has(current) ? 'Unflag' : 'Flag';
+      skipBtn.disabled = false;
+
+      updateHUD();
+      questionStartTime = Date.now();
+      save();
+    }
+
+    function select(val){
+      // record time for previous question selection
+      const dt = Date.now() - questionStartTime;
+      if(dt>250) timestamps.push(dt);
+
+      responses[current] = val;
+      recomputeSkips();
+      save();
+      renderQuestion(); // to refresh selection highlight
+    }
+
+    function next(){
+      if(responses[current]==null){
+        showToast('Select a response or Skip.');
+        return;
+      }
+      let i = current + 1;
+      while(i<questions.length && skipped.has(i)) i++;
+      current = i;
+      save();
+      if(current<questions.length) renderQuestion(); else finish();
+    }
+
+    function prev(){
+      let i = Math.max(0, current - 1);
+      // step back over auto-skipped positions
+      while(i>0 && skipped.has(i)) i--;
+      current = i;
+      renderQuestion();
+    }
+
+    function skip(){
+      // move forward without answering
+      let i = current + 1;
+      while(i<questions.length && skipped.has(i)) i++;
+      current = i;
+      renderQuestion();
+    }
+
+    function toggleFlag(){
+      if(flags.has(current)) flags.delete(current); else flags.add(current);
+      flagBtn.textContent = flags.has(current) ? 'Unflag' : 'Flag';
+      updateHUD(); save();
+    }
+
+    /*************** RESULTS ****************/
+    let radarChart, barChart;
+
+    function finish(){
+      document.getElementById('qPanel').classList.add('hide');
+      document.getElementById('sidePanel').classList.remove('hide');
+      resultSection.style.display = 'grid';
+
+      // Scores
+      const dimScores = {}; const contextScores = {}; const countsByDim = {};
+      dimensions.forEach(d=>{ dimScores[d]=0; countsByDim[d]=0; });
+      for(const ctx of contexts){ contextScores[ctx]={}; dimensions.forEach(d=>contextScores[ctx][d]=[]) }
+
+      questions.forEach((q,idx)=>{
+        const v = responses[idx];
+        if(v==null) return;
+        countsByDim[q.dimension]++;
+        dimScores[q.dimension] += v;
+        contextScores[q.context][q.dimension].push(v);
+      });
+
+      // map 1–7 to 0–100
+      dimensions.forEach(d=>{
+        if(countsByDim[d]===0) dimScores[d]=0;
+        else dimScores[d] = (((dimScores[d]/countsByDim[d]) - 1) / 6) * 100;
+      });
+
+      const labels = dimensions.slice();
+      const dataValues = labels.map(l=> dimScores[l]||0);
+
+      // Radar
+      const rctx = document.getElementById('radarChart').getContext('2d');
+      radarChart && radarChart.destroy();
+      radarChart = new Chart(rctx, {
+        type:'radar',
+        data:{ labels, datasets:[{
+          label:'Your Profile', data:dataValues, fill:true,
+          backgroundColor:'rgba(54,162,235,0.2)', borderColor:'rgba(54,162,235,1)',
+          pointBackgroundColor:'rgba(54,162,235,1)'
+        }]},
+        options:{
+          responsive:true,
+          plugins:{ legend:{display:false}},
+          scales:{ r:{
+            suggestedMin:0, suggestedMax:100,
+            ticks:{ showLabelBackdrop:false, stepSize:20, color:getComputedStyle(document.body).getPropertyValue('--muted') },
+            grid:{ color:getComputedStyle(document.body).getPropertyValue('--border') },
+            angleLines:{ color:getComputedStyle(document.body).getPropertyValue('--border') },
+            pointLabels:{ color:getComputedStyle(document.body).getPropertyValue('--text') }
+          }}
+        }
+      });
+
+      // Table
+      resultTable.innerHTML = `
+        <thead><tr><th>Dimension</th><th>Score</th><th class="small muted">Note</th></tr></thead>
+        <tbody>
+          ${dimensions.map(d=>{
+            const s = (dimScores[d]||0);
+            const tone = s>=66 ? 'good' : (s>=33?'warn':'bad');
+            const note = s>=66 ? 'Strength' : (s>=33?'Balanced':'Growth area');
+            return `<tr><td>${d}</td><td><span class="chip">${s.toFixed(1)}</span></td><td class="${tone} small">${note}</td></tr>`
+          }).join('')}
+        </tbody>`;
+
+      // Top/Bottom (bar)
+      const sorted = Object.entries(dimScores).sort((a,b)=>b[1]-a[1]);
+      const top3 = sorted.slice(0,3);
+      const bottom3 = sorted.slice(-3).reverse();
+      const barLabels = [...top3.map(x=>'▲ '+x[0]), ...bottom3.map(x=>'▼ '+x[0])];
+      const barData = [...top3.map(x=>x[1]), ...bottom3.map(x=>x[1])];
+
+      const bctx = document.getElementById('barChart').getContext('2d');
+      barChart && barChart.destroy();
+      barChart = new Chart(bctx, {
+        type:'bar',
+        data:{ labels:barLabels, datasets:[{ label:'Score', data:barData }]},
+        options:{
+          indexAxis:'y',
+          plugins:{ legend:{display:false}},
+          scales:{
+            x:{ min:0, max:100, grid:{ color:getComputedStyle(document.body).getPropertyValue('--border')}},
+            y:{ grid:{ display:false }, ticks:{ color:getComputedStyle(document.body).getPropertyValue('--text')}}
+          }
+        }
+      });
+
+      // Context blocks
+      contextBlocks.innerHTML = '';
+      contexts.forEach(ctx=>{
+        const rows = dimensions.map(d=>{
+          const arr = contextScores[ctx][d];
+          if(!arr.length) return [d, 0];
+          const avg = arr.reduce((a,b)=>a+b,0)/arr.length;
+          return [d, ((avg-1)/6)*100];
+        }).sort((a,b)=>b[1]-a[1]);
+        const div = document.createElement('div');
+        div.className='panel';
+        div.innerHTML = `<div class="muted small">${ctx.toUpperCase()}</div>
+                         <div style="height:6px"></div>
+                         ${rows.map(([d,s])=> `<div class="small" style="display:flex; justify-content:space-between; gap:8px"><span>${d}</span><span class="chip">${s.toFixed(1)}</span></div>`).join('')}`;
+        contextBlocks.appendChild(div);
+      });
+
+      // Flags
+      if(flags.size===0) flagList.textContent='None';
+      else {
+        flagList.innerHTML = '';
+        [...flags].sort((a,b)=>a-b).forEach(idx=>{
+          const v = responses[idx]==null ? '—' : responses[idx];
+          const el = document.createElement('div');
+          el.innerHTML = `<span class="flag">★</span> Q${idx+1}: <span class="small">${questions[idx].text}</span> <span class="chip">Ans: ${v}</span>`;
+          flagList.appendChild(el);
+        })
+      }
+
+      // Tips: show for top1 and bottom1
+      const top = sorted[0], bottom = sorted[sorted.length-1];
+      tipsEl.innerHTML = `
+        <div><strong>Leverage:</strong> ${top[0]} — ${tipsByDim[top[0]].map(t=>`<span class="chip">${t}</span>`).join(' ')}</div>
+        <div style="height:8px"></div>
+        <div><strong>Develop:</strong> ${bottom[0]} — ${tipsByDim[bottom[0]].map(t=>`<span class="chip">${t}</span>`).join(' ')}</div>
+      `;
+
+      // Enable exports
+      document.getElementById('downloadJson').onclick = ()=> {
+        const data = {
+          version:'1.4',
+          completedAt: new Date().toISOString(),
+          scores: dimScores,
+          context: Object.fromEntries(contexts.map(c=>[c, Object.fromEntries(dimensions.map(d=>{
+            const arr = (contextScores[c][d]||[]);
+            const avg = arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+            return [d, ((avg-1)/6)*100];
+          }))])),
+          flags:[...flags].map(i=>({ index:i, text:questions[i].text, answer:responses[i] })),
+          timeMinutes: Math.round((Date.now()-startedAt)/60000),
+          answered: responses.filter(v=>v!=null).length
+        };
+        downloadBlob(JSON.stringify(data, null, 2), 'assessment.json', 'application/json');
+      };
+
+      document.getElementById('downloadCsv').onclick = ()=> {
+        const header = 'Dimension,Score\n';
+        const rows = dimensions.map(d=> `${csvSafe(d)},${(dimScores[d]||0).toFixed(2)}`).join('\n');
+        downloadBlob(header+rows, 'assessment.csv', 'text/csv');
+      };
+
+      document.getElementById('downloadPng').onclick = ()=>{
+        const link = document.createElement('a');
+        link.download = 'radar.png';
+        link.href = radarChart.toBase64Image('image/png', 1);
+        link.click();
+      };
+
+      document.getElementById('printBtn').onclick = ()=> window.print();
+
+      showToast('Results ready');
+      save();
+    }
+
+    function csvSafe(s){ return `"${String(s).replace(/"/g,'""')}"`; }
+    function downloadBlob(content, filename, type){
+      const blob = new Blob([content], {type});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /*************** EVENTS ****************/
+    nextBtn.onclick = next;
+    prevBtn.onclick = prev;
+    skipBtn.onclick = skip;
+    flagBtn.onclick = toggleFlag;
+    resetBtn.onclick = ()=>{
+      if(confirm('Clear all answers and restart?')){ clearStorage(); location.reload(); }
+    };
+    resumeBtn.onclick = ()=>{
+      const stored = maybeLoad();
+      if(stored){
+        applyState(stored);
+        showToast('Session resumed');
+        renderQuestion();
+      }
+    };
+
+    document.addEventListener('keydown', (e)=>{
+      if(resultSection.style.display==='grid') return;
+      if(e.key>='1' && e.key<='7'){ select(Number(e.key)); }
+      else if(e.key==='Enter'){ next(); }
+      else if(e.key==='Backspace'){ e.preventDefault(); prev(); }
+      else if(e.key==='s' || e.key==='S'){ skip(); }
+      else if(e.key==='f' || e.key==='F'){ toggleFlag(); }
+    });
+
+    window.addEventListener('beforeunload', (e)=>{
+      // warn if incomplete
+      if(responses.filter(v=>v!=null).length < questions.length){
+        e.preventDefault(); e.returnValue='';
+      }
+    });
+
+    /*************** SESSION BOOT ****************/
+    function applyState(stored){
+      if(!stored) return;
+      // Only trust length-equal sessions
+      if(!stored.questions || stored.questions.length!==questions.length) return;
+      // Adopt stored order (important)
+      for(let i=0;i<questions.length;i++) questions[i] = stored.questions[i];
+      responses = Array.isArray(stored.responses) && stored.responses.length===questions.length ? stored.responses : responses;
+      flags = new Set(stored.flags||[]);
+      skipped = new Set(stored.skipped||[]);
+      timestamps = stored.timestamps||[];
+      startedAt = stored.startedAt||Date.now();
+      current = Math.min(stored.current||0, questions.length-1);
+      recomputeSkips();
+      updateHUD();
+    }
+
+    (function init(){
+      document.getElementById('year').textContent = new Date().getFullYear();
+      const stored = maybeLoad();
+      if(stored && (stored.responses||[]).some(v=>v!=null) ){
+        document.getElementById('resumeBtn').classList.remove('hide');
+        // Show a subtle toast but don't auto-resume
+        showToast('Previous session found');
+      }
+      renderQuestion();
+    })();
   </script>
 </body>
 </html>
